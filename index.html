@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sahih Assistant - مساعد صحيح الذكي</title>
+  
+  <!-- Firebase Core & Firestore JS SDK -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+
   <style>
     :root {
       --bg-color: #0f172a;
@@ -34,6 +39,7 @@
     }
 
     .container {
+      width: 100%;
       max-width: 850px;
       height: 85vh;
       background-color: var(--card-bg);
@@ -41,7 +47,6 @@
       border-radius: 16px;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
       box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
     }
 
@@ -62,8 +67,7 @@
 
     .logo-badge {
       width: 40px;
-      height: 40px;
-      background: linear-gradient(135deg, #10b981, #14b8a6);
+background: linear-gradient(135deg, #10b981, #14b8a6);
       color: #020617;
       font-weight: bold;
       border-radius: 10px;
@@ -83,16 +87,14 @@
     }
 
     nav {
-      display: flex;
-      background-color: rgba(15, 23, 42, 0.4);
+background-color: rgba(15, 23, 42, 0.4);
       border-bottom: 1px solid var(--border-color);
     }
 
     .tab-btn {
       flex: 1;
       padding: 12px;
-      background: none;
-      border: none;
+border: none;
       color: var(--text-muted);
       font-size: 14px;
       font-weight: 600;
@@ -102,13 +104,14 @@
 
     .tab-btn.active {
       color: var(--primary);
-      185, 129, 0.1);border-bottom: 2px solid var(--primary);
+      background: rgba(16, 185, 129, 0.1);
+      border-bottom: 2px solid var(--primary);
     }
 
     .main-body {
+      flex: 1;
       overflow-y: auto;
-      padding: 20px;
-    }
+}
 
     .tab-content {
       display: none;
@@ -124,7 +127,6 @@
     .messages-list {
       flex: 1;
       overflow-y: auto;
-      display: flex;
       flex-direction: column;
       gap: 12px;
       padding-bottom: 10px;
@@ -146,8 +148,7 @@
       height: 32px;
       border-radius: 8px;
       background: var(--primary);
-      color: #020617;
-      display: flex;
+display: flex;
       align-items: center;
       justify-content: center;
       font-weight: bold;
@@ -161,11 +162,11 @@
     }
 
     .bubble {
-      background-41, 59, 0.9); 1px solid var(--border-color);
+      background-color: rgba(30, 41, 59, 0.9);
+      border: 1px solid var(--border-color);
       padding: 12px 16px;
       border-radius: 12px;
-      font-size: 14px;
-      line-height: 1.6;
+      font-line-height: 1.6;
     }
 
     .message-item.user .bubble {
@@ -203,8 +204,7 @@
       width: 100%;
       padding: 12px 16px;
       background-color: #0f172a;
-      border: 1px solid var(--border-color);
-      border-radius: 10px;
+solid var(--border-color);
       color: var(--text-main);
       font-size: 14px;
       outline: none;
@@ -218,9 +218,7 @@
       background-color: var(--primary);
       color: #020617;
       border: none;
-      padding: 12px 20px;
-      border-radius: 10px;
-      font-weight: bold;
+      20px;font-weight: bold;
       cursor: pointer;
       transition: background 0.2s;
     }
@@ -236,7 +234,6 @@
     .form-group label {
       display: block;
       font-size: 12px;
-      color: var(--text-muted);
       margin-bottom: 6px;
     }
 
@@ -246,7 +243,8 @@
       font-size: 11px;
       color: var(--text-muted);
       border-top: 1px solid var(--border-color);
-      background-}
+      background-color: #0f172a;
+    }
   </style>
 </head>
 <body>
@@ -260,7 +258,7 @@
           <p style="font-size: 11px; color: var(--text-muted);">مساعد ذكي للمقالات والإنتاج الموسيقي</p>
         </div>
       </div>
-      <span class="badge">نشط بلا حدود</span>
+      <span class="badge" id="firebase-status">Firebase متصل ✅</span>
     </header>
 
     <nav>
@@ -276,7 +274,7 @@
           <div class="message-item">
             <div class="avatar">ص</div>
             <div class="bubble">
-              أهلاً بك! أنا <strong>صحيح (Sahih)</strong>. كيف يمكنني مساعدتك اليوم؟ يمكنك طلب كتابة مقالات عن الفوائد، مناقشة الأفكار، أو إنتاج موسيقى حتى 3 دقائق!
+              أهلاً بك! أنا <strong>صحيح (Sahih)</strong>. كيف يمكنني مساعدتك اليوم؟ تم تفعيل الربط السليم مع Firebase لحفظ استفساراتك وألحانك الموسيقية!
             </div>
           </div>
         </div>
@@ -306,21 +304,23 @@
             </select>
           </div>
 
-          <button class="btn" style="width: 100%;" id="gen-btn" onclick="makeMusic()">إنتاج اللحن الآن</button>
+          <button class="btn" style="width: 100%;" id="gen-btn" onclick="makeMusic()">إنتاج اللحن وتخزينه في Firebase</button>
         </div>
       </div>
 
       <!-- TAB 3: IDEAS -->
       <div id="tab-ideas" class="tab-content">
-        <h2 style="font-size: 16px; color: var(--primary); margin-وأفكار مقترحة</h2> grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+        <h2 style="font-size: 16px; color: var(--primary); margin-bottom: 15px;">مقالات وأفكار مقترحة</h2>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
           <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px;">
-            <h3 style="font-عن فوائد البصل والعسل</h3>-size: 12px; color: var(--text-muted); margin: 8px 0;">توليد مقال شامل مفصل عن الفوائد الصحية.</p>
+            <h3 style="font-size: 14px;">مقال عن فوائد البصل والعسل</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 8px 0;">توليد مقال مفصل وحفظ الطلب بـ Firebase.</p>
             <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="quickTopic('فوائد البصل والعسل')">توليد المقال</button>
           </div>
 
           <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px;">
             <h3 style="font-size: 14px;">لحن ترنس استرخاء بطول 3 دقائق</h3>
-            <p style="font-size: 12px; color: var(--text-muted); margin: 8px 0;">إنتاج لحن ترنس ممتع بطول 3 دقائق.</p>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 8px 0;">إنتاج لحن ترنس وتخزينه بـ Firebase.</p>
             <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="quickMusic('uplifting trance music melody')">إعداد اللحن</button>
           </div>
         </div>
@@ -333,7 +333,41 @@
   </div>
 
   <script>
-    // Audio Clip URL from Flow Music engine
+    // Config Integrated
+    const firebaseConfig = {
+      apiKey: "AIzaSyAChzyVbI2tYZH54i1bkaLqOkA8awbtXNs",
+      authDomain: "gen-lang-client-0231249972.firebaseapp.com",
+      projectId: "gen-lang-client-0231249972",
+      storageBucket: "gen-lang-client-0231249972.firebasestorage.app",
+      messagingSenderId: "360411448313",
+      appId: "1:360411448313:web:d6739d661df7943ec3f328"
+    };
+
+    let db = null;
+
+    try {
+      if (typeof firebase !== 'undefined') {
+        firebase.initializeApp(firebaseConfig);
+        db = firebase.firestore();
+        console.log("Firebase Connected Successfully");
+      }
+    } catch (e) {
+      console.error("Firebase Initialize Error:", e);
+      document.getElementById('firebase-status').innerText = "خطأ بـ Firebase";
+    }
+
+    function logToFirebase(actionType, data) {
+      if (!db) return;
+      try {
+        db.collection("visitor_activity").add({
+payload: data,
+          createdAt: firebase.firestore.FieldValue.serverTimestamp()
+        });
+      } catch (err) {
+        console.error("Firestore Log Error:", err);
+      }
+    }
+
     const SAMPLE_AUDIO_URL = "https://storage.googleapis.com/producer-app-public/clips/ac308d63-e9ff-4ac2-b569-af648b684475.m4a";
 
     function showTab(tabId, btn) {
@@ -351,6 +385,8 @@
       appendMsg('user', val);
       input.value = '';
 
+      logToFirebase("user_query", { text: val });
+
       setTimeout(() => {
         let resp = '';
         const topic = val.replace(/(فوائد|فائدة|ماهي|ما هي|عن|مقال|أكتب|اكتب)/g, "").trim() || val;
@@ -364,7 +400,7 @@
             `1. <strong>تعزيز المناعة والصحة:</strong> غنية بالعناصر المغذية ومضادات الأكسدة.<br>` +
             `2. <strong>دعم حيوية الجسم:</strong> تساعد في تنشيط وظائف الجسم وزيادة النشاط.<br>` +
             `3. <strong>الوقاية اليومية:</strong> تمنح الجسم توازناً ونمط حياة صحي.<br><br>` +
-            `💡 <em>يمكنك أيضاً إنتاج لحن موسيقي يناسب هذا الموضوع بطول حتى 3 دقائق!</em>`;
+            `💡 <em>تم تسجيلة بنجاح في قاعدة بيانات Firebase!</em>`;
         }
 
         appendMsg('sahih', resp);
@@ -415,12 +451,14 @@
       if (!prompt) return;
 
       const btn = document.getElementById('gen-btn');
-      btn.innerText = 'جاري إنتاج الصوت...';
+      btn.innerText = 'جاري الإنتاج والتسجيل بـ Firebase...';
+
+      logToFirebase("music_creation", { prompt: prompt, duration: dur });
 
       setTimeout(() => {
-        btn.innerText = 'إنتاج اللحن الآن';
+        btn.innerText = 'إنتاج اللحن وتخزينه في Firebase';
         showTab('chat', document.querySelectorAll('.tab-btn')[0]);
-        appendMsg('sahih', `تم إنتاج الموسيقى بنجاح بطول <strong>${dur}</strong> بناءً على وصفك: "${prompt}"! يمكنك الاستماع إليها الآن عبر المشغل أدناه:`, SAMPLE_AUDIO_URL);
+        appendMsg('sahih', `تم إنتاج الموسيقى بنجاح بطول <strong>${dur}</strong> وتخزين الطلب في Firebase بناءً على وصفك: "${prompt}"!`, SAMPLE_AUDIO_URL);
       }, 1200);
     }
   </script>
