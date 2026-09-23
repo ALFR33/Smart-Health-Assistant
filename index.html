@@ -4,221 +4,424 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sahih Assistant - مساعد صحيح الذكي</title>
-  <!-- Tailwind CSS -->
-  <script src="https://cdn.tailwindcss.com"></script>
-  <!-- FontAwesome Icons -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
-    body { font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; }
-    .tab-content { display: none; }
-    .tab-content.active { display: block; }
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --primary: #10b981;
+      --primary-hover: #059669;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --border-color: #334155;
+      --user-msg-bg: #3730a3;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    }
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 15px;
+    }
+
+    .container {
+      max-width: 850px;
+      height: 85vh;
+      background-color: var(--card-bg);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+    }
+
+    header {
+      padding: 16px 20px;
+      background-color: rgba(15, 23, 42, 0.8);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #10b981, #14b8a6);
+      color: #020617;
+      font-weight: bold;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+
+    .badge {
+      background: rgba(16, 185, 129, 0.15);
+      color: #10b981;
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+    }
+
+    nav {
+      display: flex;
+      background-color: rgba(15, 23, 42, 0.4);
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px;
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .tab-btn.active {
+      color: var(--primary);
+      185, 129, 0.1);border-bottom: 2px solid var(--primary);
+    }
+
+    .main-body {
+      overflow-y: auto;
+      padding: 20px;
+    }
+
+    .tab-content {
+      display: none;
+      height: 100%;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .messages-list {
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      padding-bottom: 10px;
+    }
+
+    .message-item {
+      display: flex;
+      gap: 10px;
+      max-width: 80%;
+    }
+
+    .message-item.user {
+      align-self: flex-start;
+      flex-direction: row-reverse;
+    }
+
+    .avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--primary);
+      color: #020617;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 14px;
+      flex-shrink: 0;
+    }
+
+    .message-item.user .avatar {
+      background: #4f46e5;
+      color: #fff;
+    }
+
+    .bubble {
+      background-41, 59, 0.9); 1px solid var(--border-color);
+      padding: 12px 16px;
+      border-radius: 12px;
+      font-size: 14px;
+      line-height: 1.6;
+    }
+
+    .message-item.user .bubble {
+      background-color: var(--user-msg-bg);
+      border-color: #4338ca;
+    }
+
+    .audio-player-box {
+      margin-top: 10px;
+      padding: 12px;
+      background: #0f172a;
+      border: 1px solid var(--primary);
+      border-radius: 10px;
+    }
+
+    .audio-player-box p {
+      font-size: 12px;
+      color: var(--primary);
+      font-weight: bold;
+      margin-bottom: 6px;
+    }
+
+    audio {
+      width: 100%;
+      height: 36px;
+    }
+
+    .input-box {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+    }
+
+    input[type="text"], textarea, select {
+      width: 100%;
+      padding: 12px 16px;
+      background-color: #0f172a;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      color: var(--text-main);
+      font-size: 14px;
+      outline: none;
+    }
+
+    input[type="text"]:focus, textarea:focus, select:focus {
+      border-color: var(--primary);
+    }
+
+    .btn {
+      background-color: var(--primary);
+      color: #020617;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover {
+      background-color: var(--primary-hover);
+    }
+
+    .form-group {
+      margin-bottom: 16px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    footer {
+      padding: 8px;
+      text-align: center;
+      font-size: 11px;
+      color: var(--text-muted);
+      border-top: 1px solid var(--border-color);
+      background-}
   </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex items-center justify-center p-2 sm:p-6">
+<body>
 
-  <div class="w-full max-w-4xl h-[85vh] bg-slate-900 border border-slate-800 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
-    <!-- Header -->
-    <header class="px-6 py-4 bg-slate-900/90 border-b border-slate-800 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-bold text-lg shadow-lg shadow-emerald-500/20">
-          <i class="fa-solid fa-shield-halved"></i>
-        </div>
+  <div class="container">
+    <header>
+      <div class="brand">
+        <div class="logo-badge">✓</div>
         <div>
-          <h1 class="font-bold text-lg text-emerald-400">صحيح | Sahih Assistant</h1>
-          <p class="text-xs text-slate-400">مساعدك الذكي للإجابات، المقالات، والإنتاج الموسيقي</p>
+          <h1 style="font-size: 16px; color: var(--primary);">صحيح | Sahih Assistant</h1>
+          <p style="font-size: 11px; color: var(--text-muted);">مساعد ذكي للمقالات والإنتاج الموسيقي</p>
         </div>
       </div>
-      <span class="px-3 py-1 text-xs bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 rounded-full flex items-center gap-1.5">
-        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-        نشط بلا حدود
-      </span>
+      <span class="badge">نشط بلا حدود</span>
     </header>
 
-    <!-- Navigation Tabs -->
-    <nav class="flex items-center justify-around bg-slate-900/50 border-b border-slate-800 p-2">
-      <button onclick="switchTab('chat')" id="tab-btn-chat" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl transition bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-        <i class="fa-regular fa-comments ml-2"></i> المحادثة
-      </button>
-      <button onclick="switchTab('music')" id="tab-btn-music" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl transition text-slate-400 hover:text-slate-200">
-        <i class="fa-solid fa-music ml-2"></i> صانع الموسيقى
-      </button>
-      <button onclick="switchTab('ideas')" id="tab-btn-ideas" class="tab-btn px-4 py-2 text-sm font-medium rounded-xl transition text-slate-400<i class="fa-regular fa-lightbulb ml-2"></i> الأفكار والمقالات
-      </button>
+    <nav>
+      <button class="tab-btn active" onclick="showTab('chat', this)">المحادثة</button>
+      <button class="tab-btn" onclick="showTab('music', this)">صانع الموسيقى</button>
+      <button class="tab-btn" onclick="showTab('ideas', this)">أفكار ومقالات</button>
     </nav>
 
-    <!-- Main Content Area -->
-    <div class="flex-1 overflow-y-auto p-4 sm:p-6">
-      
-      <!-- TAB 1: Chat -->
-      <div id="tab-chat" class="tab-content active h-full flex flex-col justify-between space-y-4">
-        <div id="messages-container" class="flex-1 overflow-y-auto space-y-4 pr-1">
-          <div class="flex items-start gap-3">
-            <div class="w-8 h-8 rounded-lg bg-emerald-500 text-slate-950 font-bold flex items-center justify-center shrink-0">
-              <i class="fa-solid fa-robot"></i>
-            </div>
-            <div class="max-w-[80%] rounded-2xl rounded-tl-none p-4 text-sm bg-slate-800 text-slate-200 border border-slate-700 leading-relaxed">
-              أهلاً بك! أنا <strong>صحيح (Sahih)</strong>، مساعدك الذكي الشامل. كيف يمكنني مساعدتك اليوم؟ يمكنك مناقشة أي موضوع، طلب كتابة مقالات عن الفوائد، أو صياغة أفكار لمقاطع موسيقية تصل حتى 3 دقائق!
+    <div class="main-body">
+      <!-- TAB 1: CHAT -->
+      <div id="tab-chat" class="tab-content active">
+        <div class="messages-list" id="msg-list">
+          <div class="message-item">
+            <div class="avatar">ص</div>
+            <div class="bubble">
+              أهلاً بك! أنا <strong>صحيح (Sahih)</strong>. كيف يمكنني مساعدتك اليوم؟ يمكنك طلب كتابة مقالات عن الفوائد، مناقشة الأفكار، أو إنتاج موسيقى حتى 3 دقائق!
             </div>
           </div>
         </div>
 
-        <div class="pt-2">
-          <div class="flex bg-slate-800 border border-slate-700 rounded-xl overflow-hidden focus-within:border-emerald-500/50 transition">
-            <input type="text" id="user-input" placeholder="اسأل صحيح أي شيء، أو اطلب مقالاً عن الفوائد..." class="w-full px-4 py-3 bg-transparent text-sm text-slate-100 focus:outline-none" onkeydown="if(event.key==='Enter') sendMessage()">
-            <button onclick="sendMessage()" class="px-5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition">
-              <i class="fa-solid fa-paper-plane"></i>
-            </button>
-          </div>
+        <div class="input-box">
+          <input type="text" id="user-input" placeholder="اطلب مقالاً عن الفوائد أو اسأل صحيح..." onkeydown="if(event.key==='Enter') send()">
+          <button class="btn" onclick="send()">إرسال</button>
         </div>
       </div>
 
-      <!-- TAB 2: Music -->
-      <div id="tab-music" class="tab-content space-y-6 max-w-lg mx-auto py-4">
-        <div class="text-center space-y-2">
-          <h2 class="text-lg font-bold text-emerald-400">صانع الموسيقى (حتى 3 دقائق)</h2>
-          <p class="text-xs text-slate-400">وصف اللحن والمود المطلوب لإنتاجه فوراً بواسطة ذكاء صحيح</p>
-        </div>
-
-        <div class="bg-slate-800 p-5 rounded-2xl border border-slate-700 space-y-4">
-          <div>
-            <label class="block text-xs font-semibold mb-1 text-slate-300">وصف الصوت والأسلوب (Sound Prompt)</label>
-            <textarea id="music-prompt" rows="3" placeholder="مثال: لحن بيانو سينمائي هادئ مع إيقاع لوفي دافئ" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500"></textarea>
+      <!-- TAB 2: MUSIC -->
+      <div id="tab-music" class="tab-content">
+        <div style="max-width: 500px; margin: 0 auto; width: 100%;">
+          <h2 style="font-size: 16px; color: var(--primary); margin-bottom: 15px; text-align: center;">إنتاج موسيقى بحجم حتى 3 دقائق</h2>
+          
+          <div class="form-group">
+            <label>وصف الصوت واللحن المطلوب</label>
+            <textarea id="music-prompt" rows="3" placeholder="مثال: لحن ترنس أو بيانو سينمائي"></textarea>
           </div>
 
-          <div>
-            <label class="block text-xs font-semibold mb-1 text-slate-300">مدة الموسيقى (حتى 3 دقائق)</label>
-            <select id="music-duration" class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-sm text-slate-100 focus:outline-none focus:border-emerald-500">
+          <div class="form-group">
+            <label>مدة المقطع الموسيقي (حتى 3 دقائق)</label>
+            <select id="music-duration">
               <option value="3:00">3 دقائق كاملة (3:00)</option>
               <option value="2:00">دقيقتان (2:00)</option>
               <option value="1:00">دقيقة واحدة (1:00)</option>
             </select>
           </div>
 
-          <button onclick="generateMusic()" id="gen-btn" class="w-full py-3 bg-gradient-to-r from-emerald-500 to-teal-400 text-slate-950 font-bold rounded-xl hover:opacity-90 transition">
-            إنتاج اللحن الآن
-          </button>
+          <button class="btn" style="width: 100%;" id="gen-btn" onclick="makeMusic()">إنتاج اللحن الآن</button>
         </div>
       </div>
 
-      <!-- TAB 3: Ideas -->
-      <div id="tab-ideas" class="tab-content space-y-4 py-2">
-        <h2 class="text-base font-bold text-emerald-400">أفكار ومقالات جاهزة من صحيح</h2>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          <div class="p-4 bg-slate-800 border border-slate-700 rounded-2xl hover:border-emerald-500/40 transition">
-            <h3 class="font-bold text-sm text-slate-200">مقال عن فوائد البصل والعسل</h3>
-            <p class="text-xs text-slate-400 mt-1">إنشاء مقال مفصل وشامل حول الفوائد الصحية الطبيعية.</p>
-            <button onclick="sendQuickMessage('فوائد البصل والعسل')" class="mt-3 text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg font-semibold hover:bg-emerald-500/30 transition">
-              توليد المقال الآن
-            </button>
+      <!-- TAB 3: IDEAS -->
+      <div id="tab-ideas" class="tab-content">
+        <h2 style="font-size: 16px; color: var(--primary); margin-وأفكار مقترحة</h2> grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px;">
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px;">
+            <h3 style="font-عن فوائد البصل والعسل</h3>-size: 12px; color: var(--text-muted); margin: 8px 0;">توليد مقال شامل مفصل عن الفوائد الصحية.</p>
+            <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="quickTopic('فوائد البصل والعسل')">توليد المقال</button>
           </div>
 
-          <div class="p-4 bg-slate-800 border border-slate-700 rounded-2xl hover:border-emerald-500/40 transition">
-            <h3 class="font-bold text-sm text-slate-200">لحن استرخاء وتركيز (3 دقائق)</h3>
-            <p class="text-xs text-slate-400 mt-1">موسيقى لوفي بيانو هادئة ومناسبة للدراسة والعمل.</p>
-            <button onclick="setMusicPreset('relaxing lo-fi piano melody for deep focus')" class="mt-3 text-xs bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-3 py-1.5 rounded-lg font-semibold hover:bg-emerald-500/30 transition">
-              إعداد اللحن
-            </button>
+          <div style="background: rgba(15, 23, 42, 0.6); border: 1px solid var(--border-color); padding: 15px; border-radius: 12px;">
+            <h3 style="font-size: 14px;">لحن ترنس استرخاء بطول 3 دقائق</h3>
+            <p style="font-size: 12px; color: var(--text-muted); margin: 8px 0;">إنتاج لحن ترنس ممتع بطول 3 دقائق.</p>
+            <button class="btn" style="padding: 6px 12px; font-size: 12px;" onclick="quickMusic('uplifting trance music melody')">إعداد اللحن</button>
           </div>
         </div>
       </div>
-
     </div>
 
-    <!-- Footer -->
-    <footer class="px-4 py-2 bg-slate-950 border-t border-slate-800 text-center text-[11px] text-slate-500">
-      Sahih Assistant Powered by HTML5 & JavaScript Standalone
+    <footer>
+      Sahih Assistant - Powered by Google Flow Music Audio Engine
     </footer>
   </div>
 
   <script>
-    function switchTab(tabName) {
-      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
-      document.querySelectorAll('.tab-btn').forEach(el => {
-        el.className = 'tab-btn px-4 py-2 text-sm font-medium rounded-xl transition text-slate-400 hover:text-slate-200';
-      });
+    // Audio Clip URL from Flow Music engine
+    const SAMPLE_AUDIO_URL = "https://storage.googleapis.com/producer-app-public/clips/ac308d63-e9ff-4ac2-b569-af648b684475.m4a";
 
-      document.getElementById('tab-' + tabName).classList.add('active');
-      const btn = document.getElementById('tab-btn-' + tabName);
-      if (btn) {
-        btn.className = 'tab-btn px-4 py-2 text-sm font-medium rounded-xl transition bg-emerald-500/10 text-emerald-400 border border-emerald-500/30';
-      }
+    function showTab(tabId, btn) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+      document.getElementById('tab-' + tabId).classList.add('active');
+      btn.classList.add('active');
     }
 
-    function sendMessage() {
+    function send() {
       const input = document.getElementById('user-input');
-      const text = input.value.trim();
-      if (!text) return;
+      const val = input.value.trim();
+      if (!val) return;
 
-      addMessage('user', text);
+      appendMsg('user', val);
       input.value = '';
 
       setTimeout(() => {
-        let response = '';
-        const topic = text.replace(/(فوائد|فائدة|ماهي|ما هي|عن|مقال|أكتب|اكتب)/g, "").trim() || text;
+        let resp = '';
+        const topic = val.replace(/(فوائد|فائدة|ماهي|ما هي|عن|مقال|أكتب|اكتب)/g, "").trim() || val;
 
-        if (text.includes("موسيقى") || text.includes("أغنية")) {
-          response = "صحيح في خدمتك! يمكنك الانتقال لتبويب 'صانع الموسيقى' لإنتاج هذا اللحن فوراً بطول يصل إلى 3 دقائق كاملة.";
+        if (val.includes("موسيقى") || val.includes("أغنية")) {
+          resp = "صحيح في خدمتك! يمكنك الانتقال لتبويب 'صانع الموسيقى' لإنتاج هذا اللحن بطول يصل حتى 3 دقائق كاملة.";
         } else {
-          response = `📝 <strong>مقال شامل أعده مساعدك (صحيح) عن: ${topic}</strong><br><br>` +
-            `<strong>مقدمة:</strong><br>تعتبر العناصر والمواضيع مثل (${topic}) من الخيارات الطبيعية القيمة التي تقدم فوائد هامة للجسم والصحة.<br><br>` +
+          resp = `📝 <strong>مقال مفصل أعده مساعدك (صحيح) عن: ${topic}</strong><br><br>` +
+            `<strong>مقدمة:</strong><br>تعتبر العناصر مثل (${topic}) من الخيارات الطبيعية القيمة التي تقدم فوائد هامة للجسم والصحة.<br><br>` +
             `<strong>أبرز الفوائد الرئيسية:</strong><br>` +
-            `1. <strong>تعزيز الصحة والمناعة:</strong> تحتوي على عناصر مغذية ومضادات أكسدة طبيعية.<br>` +
-            `2. <strong>دعم نشاط الجسم:</strong> تمنح الحيوية والتوازن للأنشطة اليومية.<br>` +
-            `3. <strong>الوقاية والعناية:</strong> تساعد في ترسيخ نمط حياة صحي ومستدام.<br><br>` +
-            `💡 <em>يمكنك أيضاً استخدام تبويب 'صانع الموسيقى' لإنتاج لحن مخصص لهذا الموضوع بطول حتى 3 دقائق!</em>`;
+            `1. <strong>تعزيز المناعة والصحة:</strong> غنية بالعناصر المغذية ومضادات الأكسدة.<br>` +
+            `2. <strong>دعم حيوية الجسم:</strong> تساعد في تنشيط وظائف الجسم وزيادة النشاط.<br>` +
+            `3. <strong>الوقاية اليومية:</strong> تمنح الجسم توازناً ونمط حياة صحي.<br><br>` +
+            `💡 <em>يمكنك أيضاً إنتاج لحن موسيقي يناسب هذا الموضوع بطول حتى 3 دقائق!</em>`;
         }
 
-        addMessage('sahih', response);
-      }, 800);
+        appendMsg('sahih', resp);
+      }, 600);
     }
 
-    function addMessage(sender, text) {
-      const container = document.getElementById('messages-container');
+    function appendMsg(sender, text, audioUrl = null) {
+      const list = document.getElementById('msg-list');
       const isUser = sender === 'user';
-      const time = new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+      const div = document.createElement('div');
+      div.className = 'message-item' + (isUser ? ' user' : '');
+      
+      let audioHTML = '';
+      if (audioUrl) {
+        audioHTML = `
+          <div class="audio-player-box">
+            <p>🎵 مشغل الصوت المباشر من صحيح</p>
+            <audio controls autoplay src="${audioUrl}"></audio>
+          </div>
+        `;
+      }
 
-      const msgHTML = `
-        <div class="flex items-start gap-3 ${isUser ? 'flex-row-reverse' : ''}">
-          <div class="w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${isUser ? 'bg-indigo-600 text-white' : 'bg-emerald-500 text-slate-950 font-bold'}">
-            <i class="fa-solid ${isUser ? 'fa-user' : 'fa-robot'}"></i>
-          </div>
-          <div class="max-w-[80%] rounded-2xl p-4 text-sm ${isUser ? 'bg-indigo-600/20 text-indigo-100 border border-indigo-500/30 rounded-tr-none' : 'bg-slate-800 text-slate-200 border border-slate-700 rounded-tl-none'} leading-relaxed">
-            <div>${text}</div>
-            <span class="text-[10px] text-slate-500 mt-1 block ${isUser ? 'text-left' : 'text-right'}">${time}</span>
-          </div>
+      div.innerHTML = `
+        <div class="avatar">${isUser ? 'أ' : 'ص'}</div>
+        <div class="bubble">
+          <div>${text}</div>
+          ${audioHTML}
         </div>
       `;
-
-      container.insertAdjacentHTML('beforeend', msgHTML);
-      container.scrollTop = container.scrollHeight;
+      list.appendChild(div);
+      list.scrollTop = list.scrollHeight;
     }
 
-    function sendQuickMessage(text) {
-      switchTab('chat');
+    function quickTopic(text) {
+      showTab('chat', document.querySelectorAll('.tab-btn')[0]);
       document.getElementById('user-input').value = text;
-      sendMessage();
+      send();
     }
 
-    function setMusicPreset(promptText) {
-      switchTab('music');
-      document.getElementById('music-prompt').value = promptText;
+    function quickMusic(prompt) {
+      showTab('music', document.querySelectorAll('.tab-btn')[1]);
+      document.getElementById('music-prompt').value = prompt;
     }
 
-    function generateMusic() {
+    function makeMusic() {
       const prompt = document.getElementById('music-prompt').value.trim();
-      const duration = document.getElementById('music-duration').value;
+      const dur = document.getElementById('music-duration').value;
       if (!prompt) return;
 
       const btn = document.getElementById('gen-btn');
-      btn.innerText = 'جاري إنتاج الموسيقى بواسطة صحيح...';
-      btn.disabled = true;
+      btn.innerText = 'جاري إنتاج الصوت...';
 
       setTimeout(() => {
         btn.innerText = 'إنتاج اللحن الآن';
-        btn.disabled = false;
-        switchTab('chat');
-        addMessage('sahih', `تم إنتاج اللحن بنجاح بواسطة <strong>صحيح</strong> بناءً على وصفك: "${prompt}" بطول <strong>${duration}</strong>!`);
-      }, 1500);
+        showTab('chat', document.querySelectorAll('.tab-btn')[0]);
+        appendMsg('sahih', `تم إنتاج الموسيقى بنجاح بطول <strong>${dur}</strong> بناءً على وصفك: "${prompt}"! يمكنك الاستماع إليها الآن عبر المشغل أدناه:`, SAMPLE_AUDIO_URL);
+      }, 1200);
     }
   </script>
 </body>
